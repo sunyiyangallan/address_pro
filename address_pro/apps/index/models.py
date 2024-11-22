@@ -8,3 +8,6 @@ import uuid as get_uuid
 
 class AddressUser(BaseModel):
     uuid = models.UUIDField(verbose_name='用户唯一标识', default=get_uuid.uuid4)
+    avatar = models.FileField(upload_to='avatar', verbose_name='头像', null=True, blank=True)
+
+

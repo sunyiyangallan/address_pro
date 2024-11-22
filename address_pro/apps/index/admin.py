@@ -10,7 +10,7 @@ admin.site.site_title = '管理后台'  # 设置title
 
 @admin.register(AddressUser)
 class FlowerAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'caozuo',)
+    list_display = ('uuid', 'avatar', 'caozuo',)
 
     def caozuo(self, obj):
         edit_url = reverse('admin:index_addressuser_change', args=[obj.pk])
