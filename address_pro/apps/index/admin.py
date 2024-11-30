@@ -10,7 +10,7 @@ admin.site.site_title = '管理后台'  # 设置title
 
 @admin.register(AddressUser)
 class FlowerAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'avatar_data', 'caozuo',)
+    list_display = ('uuid', 'name', 'avatar_data', 'juese', 'caozuo',)
 
     def caozuo(self, obj):
         edit_url = reverse('admin:index_addressuser_change', args=[obj.pk])
@@ -26,11 +26,29 @@ class FlowerAdmin(admin.ModelAdmin):
 
 @admin.register(BaseSettings)
 class FlowerAdmin(admin.ModelAdmin):
-    list_display = ('media_url', 'caozuo',)
+    list_display = ('media_url', 'img_data', 'gaode_key', 'caozuo',)
 
     def caozuo(self, obj):
         edit_url = reverse('admin:index_basesettings_change', args=[obj.pk])
         delete_url = reverse('admin:index_basesettings_delete', args=[obj.pk])
+        return format_html(
+
+            f'<a href="{edit_url}" style="color: red;">编辑</a> | <a href="{delete_url}" style="color: red;">删除</a>'
+
+        )
+
+    caozuo.short_description = u'操作'
+
+
+@admin.register(Order)
+class FlowerAdmin(admin.ModelAdmin):
+    list_display = (
+    'id','uuid', 'user', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time', 'start_address',
+    'end_address', 'caozuo',)
+
+    def caozuo(self, obj):
+        edit_url = reverse('admin:index_order_change', args=[obj.pk])
+        delete_url = reverse('admin:index_order_delete', args=[obj.pk])
         return format_html(
 
             f'<a href="{edit_url}" style="color: red;">编辑</a> | <a href="{delete_url}" style="color: red;">删除</a>'

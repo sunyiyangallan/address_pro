@@ -8,7 +8,6 @@ import os, sys
 sys.path.append(os.path.join(BASE_DIR, 'apps'))
 sys.path.append(os.path.join(BASE_DIR))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -20,10 +19,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,6 +35,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # cors的中间件
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -43,6 +43,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'address_pro.urls'
@@ -66,7 +67,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'address_pro.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -80,7 +80,6 @@ DATABASES = {
         'PASSWORD': 'address123?',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -100,7 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -112,15 +110,9 @@ USE_I18N = True
 
 USE_TZ = False
 
-
-
-
 STATIC_URL = 'static/'
 
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 LOGGING = {
     'version': 1,
@@ -183,7 +175,7 @@ SIMPLEUI_LOGO = 'https://cdn.huaxinda.top/settings.svg'
 
 SIMPLEUI_CONFIG = {
     'system_keep': False,
-    'menu_display': ['用户', '设置' ],  # 开启排序和过滤功能, 不填此字段为默认排序和全部显示, 空列表[] 为全部不显示.
+    'menu_display': ['用户', '设置', '订单'],  # 开启排序和过滤功能, 不填此字段为默认排序和全部显示, 空列表[] 为全部不显示.
     'dynamic': True,  # 设置是否开启动态菜单, 默认为False. 如果开启, 则会在每次用户登陆时动态展示菜单内容
     'menus': [
 
@@ -191,30 +183,20 @@ SIMPLEUI_CONFIG = {
             'app': 'index',  # 关联哪个app
             'name': '用户',
             'icon': 'fas fa-user-shield',
-            'models': [
-                {
-                    'name': '用户列表',
-                    'icon': 'fa fa-user',
-                    'url': 'index/addressuser'
-                },
-
-            ]
+            'url': 'index/addressuser'
         },
-{
+        {
             'app': 'index',  # 关联哪个app
             'name': '设置',
             'icon': 'fas fa-user-shield',
-            'models': [
-                {
-                    'name': '基本设置',
-                    'icon': 'fa fa-user',
-                    'url': 'index/basesettings'
-                },
-
-            ]
+            'url': 'index/basesettings'
         },
-
-
+{
+            'app': 'index',  # 关联哪个app
+            'name': '订单',
+            'icon': 'fas fa-user-shield',
+            'url': 'index/order'
+        },
 
     ]
 }
@@ -258,3 +240,29 @@ EMAIL_HOST_USER = '275876954@qq.com'
 EMAIL_HOST_PASSWORD = 'xpzhkoovtzhgbhgc'
 DEFAULT_FROM_EMAIL = '275876954@qq.com'
 
+# 跨域
+# 跨域问题的中间件
+CORS_ORIGIN_ALLOW_ALL = True  # 允许所有域发请求，等同于response["Access-Control-Allow-Origin"] = "*"
+
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
+)
+
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+
+)

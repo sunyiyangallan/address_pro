@@ -4,13 +4,26 @@ from django.urls import path
 
 router = SimpleRouter()
 
-# router.register('get_all_store', views.GetAllStoreDataView, 'get_all_store')
-# router.register('get_flower_data', views.GetFlowerDataView, 'get_flower_data')
-# router.register('get_category', views.GetCategoryView, 'get_category')
-# router.register('get_category2', views.GetCategory2View, 'get_category2')
+router.register('get_login_img', views.GetLoginImgView, 'get_login_img')
+router.register('juese', views.JueSeView, 'juese')
+router.register('user_info', views.GetUserInfoView, 'user_info')
+router.register('get_all_order', views.GetAllOrderView, 'get_all_order')
+router.register('get_order', views.GetUserOrderView, 'get_order')
+router.register('get_common_user', views.GetAllCommonUserView, 'get_common_user')
+router.register('get_one_order', views.GetOneOrderView, 'get_one_order')
+
 
 urlpatterns = [
-    # path('get_flower_data/', views.GetFlowerDataView.as_view()),
+    path('register/', views.RegisterView.as_view()),
+    path('login/', views.LoginView.as_view()),
+    path('search_address/', views.SearchAddressView.as_view()),
+    path('get_add_order/', views.GetDayAddOrderView.as_view()),
+    path('get_complete_order/', views.GetDayCompleteOrderView.as_view()),
+    path('get_juese_fenbu/', views.GetJueSeView.as_view()),
+    path('get_order_state/', views.GetOrderStateView.as_view()),
+    path('create_order/', views.CreateOrderView.as_view()),
+    path('start_order/', views.StartOrderView.as_view()),
+    path('end_order/', views.EndOrderView.as_view()),
 
 ]
 
