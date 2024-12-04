@@ -11,6 +11,7 @@ router.register('get_all_order', views.GetAllOrderView, 'get_all_order')
 router.register('get_order', views.GetUserOrderView, 'get_order')
 router.register('get_common_user', views.GetAllCommonUserView, 'get_common_user')
 router.register('get_one_order', views.GetOneOrderView, 'get_one_order')
+router.register('get_null_order', views.NullOrderView, 'get_null_order')
 
 
 urlpatterns = [
@@ -24,6 +25,8 @@ urlpatterns = [
     path('create_order/', views.CreateOrderView.as_view()),
     path('start_order/', views.StartOrderView.as_view()),
     path('end_order/', views.EndOrderView.as_view()),
+    path('update_order/', views.UpdateOrderView.as_view()),
+
 
 ]
 

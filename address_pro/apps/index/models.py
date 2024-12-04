@@ -44,6 +44,8 @@ class BaseSettings(BaseModel):
     media_url = models.CharField(verbose_name='media_url', max_length=64, null=True, blank=True)
     img = models.FileField(upload_to='avatar', verbose_name='注册登录背景图', null=True, blank=True)
     gaode_key = models.CharField(verbose_name='高德key', max_length=128, null=True, blank=True)
+    code = models.CharField(verbose_name='授权码', max_length=64, null=True,blank=True)
+
 
     class Meta:
         db_table = 'base_settings'
@@ -73,6 +75,7 @@ class Order(BaseModel):
     end_address = models.CharField(verbose_name='目的地', max_length=125, null=True, blank=True)
     start_location = models.CharField(verbose_name='起始地经纬度', max_length=125, null=True, blank=True)
     end_location = models.CharField(verbose_name='目的地经纬度', max_length=125, null=True, blank=True)
+    num = models.IntegerField(verbose_name='派送数量', default=0, null=True,blank=True)
 
 
 

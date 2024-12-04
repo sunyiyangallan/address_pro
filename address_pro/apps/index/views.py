@@ -14,6 +14,7 @@ from rest_framework.filters import SearchFilter
 import requests
 import json
 from datetime import datetime
+from django.db.models import Case, When
 
 
 # 获取背景图
@@ -28,7 +29,9 @@ class RegisterView(APIView):
         name = request.data.get('name')
         password = request.data.get('password')
         juese = request.data.get('juese')
+        code = request.data.get('code')
         token = md5_encrypt(f'{name}{juese}{password}')
+        setting_obj = BaseSettings.objects.all().first()
 
         return_data = {
             'token': token
@@ -38,9 +41,20 @@ class RegisterView(APIView):
             return ApiResponse(code=333, msg="用户已经存在")
 
         else:
-            AddressUser.objects.create(name=name, password=password, juese=int(juese), token=token)
+            if int(juese) == 2:
+                if code:
+                    if setting_obj.code != code:
+                        return ApiResponse(code=444, msg="没有权限")
+                    else:
+                        AddressUser.objects.create(name=name, password=password, juese=int(juese), token=token)
+                        return ApiResponse(data=return_data)
+                else:
+                    return ApiResponse(code=444, msg="注册失败")
+            else:
+                AddressUser.objects.create(name=name, password=password, juese=int(juese), token=token)
+                return ApiResponse(data=return_data)
 
-            return ApiResponse(data=return_data)
+
 
 
 # 登录
@@ -83,17 +97,47 @@ class GetUserInfoView(GenericViewSet, ListModelMixin):
 
 
 class GetAllOrderView(GenericViewSet, ListModelMixin):
-    queryset = Order.objects.all().order_by('state', 'id')
+    # queryset = Order.objects.all().order_by('state', 'id')
     serializer_class = GetAllOrderSerializer
     filter_backends = [SearchFilter]
     search_fields = ['desc', 'uuid', ]
 
+    def get_queryset(self):
+        # 定义状态的排序顺序
+        state_order = Case(
+            When(state=1, then=0),
+            When(state=0, then=1),
+            When(state=2, then=2),
+        )
+
+        # 获取基础查询集并应用排序和过滤
+        queryset = Order.objects.all().annotate(state_order=state_order).order_by('state_order', 'id')
+
+        # 筛选 user 字段未赋值的订单
+        queryset = queryset.filter(user__isnull=False)
+        return queryset
+
+
 
 class GetUserOrderView(GenericViewSet, ListModelMixin):
-    queryset = Order.objects.all().order_by('date')
+    # queryset = Order.objects.all().order_by('date')
     serializer_class = GetAllOrderSerializer
     filter_backends = [SearchFilter]
     search_fields = ['user__token', 'desc', 'uuid', ]
+
+
+    def get_queryset(self):
+        # 定义状态的排序顺序
+        state_order = Case(
+            When(state=1, then=0),
+            When(state=0, then=1),
+            When(state=2, then=2),
+        )
+
+        # 获取基础查询集并应用排序和过滤
+        queryset = Order.objects.all().annotate(state_order=state_order).order_by('state_order', 'id')
+        return queryset
+
 
 
 class SearchAddressView(APIView):
@@ -287,24 +331,23 @@ class GetAllCommonUserView(GenericViewSet, ListModelMixin):
 # 创建订单
 class CreateOrderView(APIView):
     def post(self, request):
-        user_id = request.data.get('user')
-        user_obj = AddressUser.objects.filter(id=user_id).first()
+        # user_id = request.data.get('user')
+        # user_obj = AddressUser.objects.filter(id=user_id).first()
 
         desc = request.data.get('desc')
         level = int(request.data.get('level'))
         # date = request.data.get('time3')
 
         date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
-        start_address = request.data.get('search_start')
+        # start_address = request.data.get('search_start')
         end_address = request.data.get('search_end')
-        start_location = request.data.get('start_location')
-        end_location = request.data.get('end_location')
+        num = request.data.get('search_num')
+        # start_location = request.data.get('start_location')
+        # end_location = request.data.get('end_location')
         # start_time = request.data.get('time1')
-        start_time = datetime.strptime(request.data.get('time1'), '%Y-%m-%dT%H:%M:%S.%fZ')
+        # start_time = datetime.strptime(request.data.get('time1'), '%Y-%m-%dT%H:%M:%S.%fZ')
 
-        Order.objects.create(user=user_obj, desc=desc, level=level, start_time=start_time, date=date,
-                             start_address=start_address, end_address=end_address, start_location=start_location,
-                             end_location=end_location)
+        Order.objects.create( desc=desc, level=level, date=date,end_address=end_address,num=num)
 
         return ApiResponse()
 
@@ -319,7 +362,7 @@ class GetOneOrderView(GenericViewSet, ListModelMixin):
 class StartOrderView(APIView):
     def get(self,request):
         id = request.query_params.get('id')
-        Order.objects.filter(id=id).update(state=1)
+        Order.objects.filter(id=id).update(state=1,start_time=datetime.now())
         return ApiResponse()
 
 
@@ -327,4 +370,21 @@ class EndOrderView(APIView):
     def get(self, request):
         id = request.query_params.get('id')
         Order.objects.filter(id=id).update(state=2,end_time=datetime.now())
+        return ApiResponse()
+
+
+
+class NullOrderView(GenericViewSet,ListModelMixin):
+    queryset = Order.objects.filter(user__isnull=True).all()
+    serializer_class = GetAllOrderSerializer
+
+# 更新订单
+class UpdateOrderView(APIView):
+    def post(self,request):
+        user = request.data.get('user')
+        order = request.data.get('order')
+
+        user_obj = AddressUser.objects.filter(id=user).first()
+        Order.objects.filter(id=order).update(user=user_obj)
+
         return ApiResponse()
