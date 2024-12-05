@@ -76,6 +76,7 @@ class Order(BaseModel):
     start_location = models.CharField(verbose_name='起始地经纬度', max_length=125, null=True, blank=True)
     end_location = models.CharField(verbose_name='目的地经纬度', max_length=125, null=True, blank=True)
     num = models.IntegerField(verbose_name='派送数量', default=0, null=True,blank=True)
+    shunxu = models.IntegerField(verbose_name='顺序', null=True, blank=True)
 
 
 

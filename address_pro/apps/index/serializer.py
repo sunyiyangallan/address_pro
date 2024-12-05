@@ -26,7 +26,7 @@ class GetAllOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id','user_name', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time', 'start_address',
-                  'end_address', 'start_location', 'end_location', 'uuid', 'num']
+                  'end_address', 'start_location', 'end_location', 'uuid', 'num', 'shunxu']
 
 
 class GetUserSerializer(serializers.ModelSerializer):
@@ -41,4 +41,4 @@ class GetOneOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id','user_name', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time', 'start_address',
-                  'end_address', 'start_location', 'end_location', 'uuid']
+                  'end_address', 'start_location', 'end_location', 'uuid', 'shunxu']

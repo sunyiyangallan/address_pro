@@ -100,7 +100,7 @@ class GetAllOrderView(GenericViewSet, ListModelMixin):
     # queryset = Order.objects.all().order_by('state', 'id')
     serializer_class = GetAllOrderSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['desc', 'uuid', ]
+    search_fields = ['desc', 'shunxu', ]
 
     def get_queryset(self):
         # 定义状态的排序顺序
@@ -111,7 +111,7 @@ class GetAllOrderView(GenericViewSet, ListModelMixin):
         )
 
         # 获取基础查询集并应用排序和过滤
-        queryset = Order.objects.all().annotate(state_order=state_order).order_by('state_order', 'id')
+        queryset = Order.objects.all().annotate(state_order=state_order).order_by('state_order', 'shunxu')
 
         # 筛选 user 字段未赋值的订单
         queryset = queryset.filter(user__isnull=False)
@@ -120,23 +120,23 @@ class GetAllOrderView(GenericViewSet, ListModelMixin):
 
 
 class GetUserOrderView(GenericViewSet, ListModelMixin):
-    # queryset = Order.objects.all().order_by('date')
+    queryset = Order.objects.all().order_by('shunxu')
     serializer_class = GetAllOrderSerializer
     filter_backends = [SearchFilter]
-    search_fields = ['user__token', 'desc', 'uuid', ]
+    search_fields = ['user__token', 'desc', 'shunxu', ]
 
 
-    def get_queryset(self):
-        # 定义状态的排序顺序
-        state_order = Case(
-            When(state=1, then=0),
-            When(state=0, then=1),
-            When(state=2, then=2),
-        )
-
-        # 获取基础查询集并应用排序和过滤
-        queryset = Order.objects.all().annotate(state_order=state_order).order_by('state_order', 'id')
-        return queryset
+    # def get_queryset(self):
+    #     # 定义状态的排序顺序
+    #     state_order = Case(
+    #         When(state=1, then=0),
+    #         When(state=0, then=1),
+    #         When(state=2, then=2),
+    #     )
+    #
+    #     # 获取基础查询集并应用排序和过滤
+    #     queryset = Order.objects.all().annotate(state_order=state_order).order_by('shunxu', 'id')
+    #     return queryset
 
 
 
@@ -383,8 +383,9 @@ class UpdateOrderView(APIView):
     def post(self,request):
         user = request.data.get('user')
         order = request.data.get('order')
+        shunxu = int(request.data.get('num'))
 
         user_obj = AddressUser.objects.filter(id=user).first()
-        Order.objects.filter(id=order).update(user=user_obj)
+        Order.objects.filter(id=order).update(user=user_obj,shunxu=shunxu)
 
         return ApiResponse()
