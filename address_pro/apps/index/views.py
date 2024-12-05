@@ -119,6 +119,7 @@ class GetAllOrderView(GenericViewSet, ListModelMixin):
 
 
 
+
 class GetUserOrderView(GenericViewSet, ListModelMixin):
     queryset = Order.objects.all().order_by('shunxu')
     serializer_class = GetAllOrderSerializer
