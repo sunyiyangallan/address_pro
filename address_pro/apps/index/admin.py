@@ -43,12 +43,29 @@ class FlowerAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class FlowerAdmin(admin.ModelAdmin):
     list_display = (
-    'id','uuid', 'user', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time', 'start_address',
-    'end_address', 'caozuo',)
+        'shunxu', 'type', 'user', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time', 'start_address',
+        'end_address', 'connect_user', 'connect_phone', 'caozuo',)
 
     def caozuo(self, obj):
         edit_url = reverse('admin:index_order_change', args=[obj.pk])
         delete_url = reverse('admin:index_order_delete', args=[obj.pk])
+        return format_html(
+
+            f'<a href="{edit_url}" style="color: red;">编辑</a> | <a href="{delete_url}" style="color: red;">删除</a>'
+
+        )
+
+    caozuo.short_description = u'操作'
+
+
+@admin.register(OrderType)
+class FlowerAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'price', 'caozuo',)
+
+    def caozuo(self, obj):
+        edit_url = reverse('admin:index_ordertype_change', args=[obj.pk])
+        delete_url = reverse('admin:index_ordertype_delete', args=[obj.pk])
         return format_html(
 
             f'<a href="{edit_url}" style="color: red;">编辑</a> | <a href="{delete_url}" style="color: red;">删除</a>'

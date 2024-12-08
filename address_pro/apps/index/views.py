@@ -3,9 +3,9 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin
 from utils.response import ApiResponse
 from address_pro.utils.md5 import md5_encrypt
-from .models import AddressUser, BaseSettings, Order
+from .models import AddressUser, BaseSettings, Order, OrderType,UpdateOrder
 from .serializer import GetLoginImgSerializer, GetJueSeSerializer, GetUserInfoSerializer, GetAllOrderSerializer, \
-    GetUserSerializer, GetOneOrderSerializer
+    GetUserSerializer, GetOneOrderSerializer, GetOrderTypeSerializer, GetUpdateOrderSerializer
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
@@ -114,14 +114,11 @@ class GetAllOrderView(GenericViewSet, ListModelMixin):
         queryset = Order.objects.all().annotate(state_order=state_order).order_by('state_order', 'shunxu')
 
         # 筛选 user 字段未赋值的订单
-        queryset = queryset.filter(user__isnull=False)
+        # queryset = queryset.filter(user__isnull=False)
         return queryset
 
-
-
-
 class GetUserOrderView(GenericViewSet, ListModelMixin):
-    queryset = Order.objects.all().order_by('shunxu')
+    queryset = Order.objects.filter(state__in=[1,0]).order_by('shunxu')
     serializer_class = GetAllOrderSerializer
     filter_backends = [SearchFilter]
     search_fields = ['user__token', 'desc', 'shunxu', ]
@@ -332,23 +329,19 @@ class GetAllCommonUserView(GenericViewSet, ListModelMixin):
 # 创建订单
 class CreateOrderView(APIView):
     def post(self, request):
-        # user_id = request.data.get('user')
-        # user_obj = AddressUser.objects.filter(id=user_id).first()
-
         desc = request.data.get('desc')
         level = int(request.data.get('level'))
-        # date = request.data.get('time3')
-
         date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
-        # start_address = request.data.get('search_start')
         end_address = request.data.get('search_end')
         num = request.data.get('search_num')
-        # start_location = request.data.get('start_location')
-        # end_location = request.data.get('end_location')
-        # start_time = request.data.get('time1')
-        # start_time = datetime.strptime(request.data.get('time1'), '%Y-%m-%dT%H:%M:%S.%fZ')
+        price = request.data.get('price')
+        connect_user = request.data.get('connect_user')
+        connect_phone = request.data.get('connect_phone')
+        type_id = request.data.get('type')
+        type_obj = OrderType.objects.filter(id=type_id).first()
 
-        Order.objects.create( desc=desc, level=level, date=date,end_address=end_address,num=num)
+
+        Order.objects.create( desc=desc, level=level, date=date,end_address=end_address,num=num,type=type_obj,price=price,connect_user=connect_user,connect_phone=connect_phone)
 
         return ApiResponse()
 
@@ -387,6 +380,105 @@ class UpdateOrderView(APIView):
         shunxu = int(request.data.get('num'))
 
         user_obj = AddressUser.objects.filter(id=user).first()
-        Order.objects.filter(id=order).update(user=user_obj,shunxu=shunxu)
+        Order.objects.filter(id=order).update(user=user_obj,shunxu=shunxu,state=0)
 
         return ApiResponse()
+
+# 获取订单类型
+class GetOrderTypeView(GenericViewSet, ListModelMixin):
+    queryset = OrderType.objects.all()
+    serializer_class = GetOrderTypeSerializer
+
+
+
+# 获取当前最大顺序
+class GetMaxView(APIView):
+    def get(self,request):
+        order_obj = Order.objects.filter(shunxu__isnull=False).order_by('-shunxu').first()
+        max_num = order_obj.shunxu + 1
+        if order_obj:
+            return ApiResponse(data={'max':max_num})
+        else:
+            return ApiResponse(msg=222)
+
+
+# 修改订单
+class PaiUpdateOrderView(APIView):
+    def post(self,request):
+
+
+        juese = request.data.get('juese')
+
+        if juese == 0:
+            order_id = request.data.get('order_id')
+            desc = request.data.get('desc')
+            level = int(request.data.get('level'))
+            date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
+            end_address = request.data.get('search_end')
+            num = request.data.get('search_num')
+            price = request.data.get('price')
+            connect_user = request.data.get('connect_user')
+            connect_phone = request.data.get('connect_phone')
+            type_id = request.data.get('type')
+            type_obj = OrderType.objects.filter(id=type_id).first()
+            UpdateOrder.objects.create(desc=desc, level=level, date=date,end_address=end_address,num=num,type=type_obj,price=price,connect_user=connect_user,connect_phone=connect_phone)
+            UpdateOrder_obj = UpdateOrder.objects.all().order_by('-id').first()
+            Order.objects.filter(id=order_id).update(update_order=UpdateOrder_obj)
+
+
+            return ApiResponse()
+        else:
+
+
+            desc = request.data.get('desc')
+            order_id = request.data.get('order_id')
+            level = int(request.data.get('level'))
+            date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
+            end_address = request.data.get('search_end')
+            num = request.data.get('search_num')
+            price = request.data.get('price')
+            connect_user = request.data.get('connect_user')
+            connect_phone = request.data.get('connect_phone')
+            type_id = request.data.get('type')
+            type_obj = OrderType.objects.filter(id=type_id).first()
+
+            Order.objects.filter(id=order_id).update( desc=desc, level=level, date=date,end_address=end_address,num=num,type=type_obj,price=price,connect_user=connect_user,connect_phone=connect_phone,is_reback=True)
+            return ApiResponse()
+
+# 获取修改的订单
+class GetUpdateOrderView(GenericViewSet, ListModelMixin):
+    queryset = UpdateOrder.objects.all().order_by('-id')
+    serializer_class = GetUpdateOrderSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['id', ]
+
+
+
+
+class ConfirmOrderView(APIView):
+    def get(self,request):
+        order_id = int(request.query_params.get('order_id'))
+        update_id = int(request.query_params.get('update_id'))
+
+        update_order = UpdateOrder.objects.filter(id=update_id).first()
+        desc = update_order.desc
+        level = update_order.level
+        date = update_order.date
+        end_address = update_order.end_address
+        num = update_order.num
+        connect_user = update_order.connect_user
+        connect_phone = update_order.connect_phone
+        type_id = update_order.type.id
+        price = update_order.price
+        type_obj = OrderType.objects.filter(id=type_id).first()
+        Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date, end_address=end_address, num=num,
+                                                 type=type_obj, price=price, connect_user=connect_user,
+                                                 connect_phone=connect_phone, is_reback=True)
+
+
+        return ApiResponse()
+
+
+
+
+

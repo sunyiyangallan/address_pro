@@ -27,7 +27,6 @@ class AddressUser(BaseModel):
 
     avatar_data.short_description = u'头像'
 
-
     def __str__(self):
         juese_text = ''
         if self.juese == 0:
@@ -44,8 +43,7 @@ class BaseSettings(BaseModel):
     media_url = models.CharField(verbose_name='media_url', max_length=64, null=True, blank=True)
     img = models.FileField(upload_to='avatar', verbose_name='注册登录背景图', null=True, blank=True)
     gaode_key = models.CharField(verbose_name='高德key', max_length=128, null=True, blank=True)
-    code = models.CharField(verbose_name='授权码', max_length=64, null=True,blank=True)
-
+    code = models.CharField(verbose_name='授权码', max_length=64, null=True, blank=True)
 
     class Meta:
         db_table = 'base_settings'
@@ -68,20 +66,39 @@ class Order(BaseModel):
     level = models.SmallIntegerField(choices=((0, '普通'), (1, '加急'), (2, '紧急')), verbose_name='优先级', default=0)
     date = models.DateTimeField(verbose_name='截至日期', null=True, blank=True)
     is_valid = models.BooleanField(verbose_name='是否有效', default=True)
-    state = models.SmallIntegerField(choices=((0, '未开始'), (1, '进行中'), (2, '已完成')), verbose_name='状态', default=0)
+    state = models.SmallIntegerField(choices=((-1, '未分配'),(0, '未开始'), (1, '进行中'), (2, '已完成')), verbose_name='状态', default=-1)
     start_time = models.DateTimeField(verbose_name='开始时间', null=True, blank=True)
     end_time = models.DateTimeField(verbose_name='结束时间', null=True, blank=True)
     start_address = models.CharField(verbose_name='起始地', max_length=125, null=True, blank=True)
     end_address = models.CharField(verbose_name='目的地', max_length=125, null=True, blank=True)
     start_location = models.CharField(verbose_name='起始地经纬度', max_length=125, null=True, blank=True)
     end_location = models.CharField(verbose_name='目的地经纬度', max_length=125, null=True, blank=True)
-    num = models.IntegerField(verbose_name='派送数量', default=0, null=True,blank=True)
+    num = models.IntegerField(verbose_name='派送数量', default=0, null=True, blank=True)
     shunxu = models.IntegerField(verbose_name='顺序', null=True, blank=True)
+    connect_user = models.CharField(verbose_name='联系人', max_length=64, null=True, blank=True)
+    connect_phone = models.CharField(verbose_name='联系人电话', max_length=64, null=True, blank=True)
+    type = models.ForeignKey(to='OrderType', verbose_name='类型', null=True, blank=True, on_delete=models.CASCADE)
+    price = models.FloatField(verbose_name='价格', default=0)
+    is_reback = models.BooleanField(verbose_name='是否修改', default=False)
+    update_order = models.OneToOneField(to='UpdateOrder', on_delete=models.CASCADE, null=True, blank=True,)
 
 
 
+class OrderType(BaseModel):
+    name = models.CharField(verbose_name='类型名称', max_length=64, null=True, blank=True)
+    price = models.FloatField(verbose_name='价格', default=0)
+
+    def __str__(self):
+        return self.name
 
 
-
-
-
+class UpdateOrder(BaseModel):
+    desc = models.CharField(verbose_name='描述', max_length=125, null=True, blank=True)
+    level = models.SmallIntegerField(choices=((0, '普通'), (1, '加急'), (2, '紧急')), verbose_name='优先级', default=0)
+    date = models.DateTimeField(verbose_name='截至日期', null=True, blank=True)
+    end_address = models.CharField(verbose_name='目的地', max_length=125, null=True, blank=True)
+    num = models.IntegerField(verbose_name='派送数量', default=0, null=True, blank=True)
+    connect_user = models.CharField(verbose_name='联系人', max_length=64, null=True, blank=True)
+    connect_phone = models.CharField(verbose_name='联系人电话', max_length=64, null=True, blank=True)
+    type = models.ForeignKey(to='OrderType', verbose_name='类型', null=True, blank=True, on_delete=models.CASCADE)
+    price = models.FloatField(verbose_name='价格', default=0)
