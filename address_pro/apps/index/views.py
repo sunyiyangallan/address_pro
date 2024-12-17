@@ -394,12 +394,15 @@ class GetOrderTypeView(GenericViewSet, ListModelMixin):
 # 获取当前最大顺序
 class GetMaxView(APIView):
     def get(self,request):
-        order_obj = Order.objects.filter(shunxu__isnull=False).order_by('-shunxu').first()
-        max_num = order_obj.shunxu + 1
+
+        id = request.query_params.get('uid')
+        order_obj = Order.objects.filter(shunxu__isnull=False, user__id=int(id)).order_by('-shunxu').first()
+
         if order_obj:
+            max_num = order_obj.shunxu + 1
             return ApiResponse(data={'max':max_num})
         else:
-            return ApiResponse(msg=222)
+            return ApiResponse(data={'max':1})
 
 
 # 修改订单
