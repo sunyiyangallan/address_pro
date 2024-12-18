@@ -77,10 +77,11 @@ class Order(BaseModel):
     shunxu = models.IntegerField(verbose_name='顺序', null=True, blank=True)
     connect_user = models.CharField(verbose_name='联系人', max_length=64, null=True, blank=True)
     connect_phone = models.CharField(verbose_name='联系人电话', max_length=64, null=True, blank=True)
-    type = models.ForeignKey(to='OrderType', verbose_name='类型', null=True, blank=True, on_delete=models.CASCADE)
+    type = models.ManyToManyField(to='OrderType', verbose_name='类型', null=True, blank=True)
     price = models.FloatField(verbose_name='价格', default=0)
     is_reback = models.BooleanField(verbose_name='是否修改', default=False)
     update_order = models.OneToOneField(to='UpdateOrder', on_delete=models.CASCADE, null=True, blank=True,)
+    type_str = models.TextField(verbose_name='类型描述', null=True, blank=True)
 
 
 
@@ -100,5 +101,5 @@ class UpdateOrder(BaseModel):
     num = models.IntegerField(verbose_name='派送数量', default=0, null=True, blank=True)
     connect_user = models.CharField(verbose_name='联系人', max_length=64, null=True, blank=True)
     connect_phone = models.CharField(verbose_name='联系人电话', max_length=64, null=True, blank=True)
-    type = models.ForeignKey(to='OrderType', verbose_name='类型', null=True, blank=True, on_delete=models.CASCADE)
+    type = models.ManyToManyField(to='OrderType', verbose_name='类型', null=True, blank=True)
     price = models.FloatField(verbose_name='价格', default=0)

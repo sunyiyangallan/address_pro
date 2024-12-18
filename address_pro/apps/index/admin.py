@@ -43,7 +43,7 @@ class FlowerAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class FlowerAdmin(admin.ModelAdmin):
     list_display = (
-        'shunxu', 'type', 'user', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time', 'start_address',
+        'shunxu', 'user', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time', 'start_address',
         'end_address', 'connect_user', 'connect_phone', 'caozuo',)
 
     def caozuo(self, obj):
