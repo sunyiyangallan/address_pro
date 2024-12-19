@@ -57,9 +57,9 @@ class GetOrderTypeSerializer(serializers.ModelSerializer):
 
 
 class GetUpdateOrderSerializer(serializers.ModelSerializer):
-    # type_name = serializers.CharField(source='type.name', read_only=True)
+    type_name = serializers.CharField(source='type_str', read_only=True)
 
     class Meta:
         model = UpdateOrder
         fields = ['desc', 'level', 'date',
-                  'end_address', 'connect_user', 'connect_phone', 'price', 'num', 'id']
+                  'end_address', 'connect_user', 'connect_phone', 'price', 'num', 'id', 'type_name']
