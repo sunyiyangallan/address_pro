@@ -66,13 +66,15 @@ class GetOrderTypeSerializer(serializers.ModelSerializer):
         fields = ['name', 'price', 'id']
 
 
+
 class GetUpdateOrderSerializer(serializers.ModelSerializer):
     type_name = serializers.CharField(source='type_str', read_only=True)
+    service_list = ServiceSerializer(many=True, read_only=True)
 
     class Meta:
         model = UpdateOrder
         fields = ['desc', 'level', 'date',
-                  'end_address', 'connect_user', 'connect_phone', 'price', 'num', 'id', 'type_name']
+                  'end_address', 'connect_user', 'connect_phone', 'price', 'num', 'id', 'type_name', 'service_list']
 
 
 class GetAllServiceTypeSerializer(serializers.ModelSerializer):

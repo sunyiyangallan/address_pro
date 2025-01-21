@@ -353,7 +353,7 @@ class CreateOrderView(APIView):
             for i in service_obj:
                 order_obj.service_list.add(i)
 
-        type_obj_list = OrderType.objects.all().order_by('id')
+        # type_obj_list = OrderType.objects.all().order_by('id')
         type_id_list = []
         # for key, values in type_dic.items():
         #     if values == 0:
@@ -442,52 +442,109 @@ class PaiUpdateOrderView(APIView):
         desc = request.data.get('desc')
         level = int(request.data.get('level'))
         date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
-        end_address = request.data.get('search_end')
-        type_dic = request.data.get('search_num')
+        # end_address = request.data.get('search_end')
+        # type_dic = request.data.get('search_num')
+        service_list = request.data.get('service_list')
         price = request.data.get('price')
         connect_user = request.data.get('connect_user')
         connect_phone = request.data.get('connect_phone')
         text_str = ''
 
-        type_obj_list = OrderType.objects.all().order_by('id')
-        type_id_list = []
-        for key, values in type_dic.items():
-            if values == 0:
-                continue
-            type_id_list.append(type_obj_list[int(key)].id)
-            new_type_obj = OrderType.objects.filter(id=type_obj_list[int(key)].id).first()
-            text_str += f'类型:{new_type_obj.name},数量:{values}; '
+        # type_obj_list = OrderType.objects.all().order_by('id')
 
-        type_obj = OrderType.objects.filter(id__in=type_id_list).all()
+        service_id_list = []
+        for i in service_list:
+            service_id_list.append(i.get('id'))
 
-        if type_obj:
+        service_obj = Service.objects.filter(id__in=service_id_list).all()
 
+        if service_obj:
             if juese == 0:
-
-                UpdateOrder.objects.create(desc=desc, level=level, date=date, end_address=end_address,
-                                           connect_user=connect_user, connect_phone=connect_phone, type_str=text_str,
-                                           price=price)
+                UpdateOrder.objects.create(desc=desc, level=level, date=date,
+                                                   connect_user=connect_user, connect_phone=connect_phone,
+                                                   price=price)
                 UpdateOrder_obj = UpdateOrder.objects.all().order_by('-id').first()
-                for i in type_obj:
-                    UpdateOrder_obj.type.add(i)
+                for i in service_obj:
+                    UpdateOrder_obj.service_list.add(i)
                 Order.objects.filter(id=order_id).update(update_order=UpdateOrder_obj)
                 return ApiResponse()
+                # UpdateOrder.objects.create(desc=desc, level=level, date=date, end_address=end_address,
+                #                            connect_user=connect_user, connect_phone=connect_phone, type_str=text_str,
+                #                            price=price)
+                # UpdateOrder_obj = UpdateOrder.objects.all().order_by('-id').first()
+                # for i in type_obj:
+                #     UpdateOrder_obj.type.add(i)
+                # Order.objects.filter(id=order_id).update(update_order=UpdateOrder_obj)
+                # return ApiResponse()
             else:
                 order_obj = Order.objects.filter(id=order_id).first()
-                for i in type_obj:
-                    order_obj.type.add(i)
-                Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date, end_address=end_address,
+                if order_obj.service_list:
+                    order_obj.service_list.clear()
+                for i in service_obj:
+                    order_obj.service_list.add(i)
+                Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date,
                                                          connect_user=connect_user, connect_phone=connect_phone,
-                                                         type_str=text_str, price=price)
+                                                          price=price)
                 return ApiResponse()
+
+
+
+
+        # Order.objects.create(desc=desc, level=level, date=date,
+        #                      price=price, connect_user=connect_user, connect_phone=connect_phone)
+        #
+        # order_obj = Order.objects.all().order_by('-id').first()
+        # if service_obj:
+        #     for i in service_obj:
+        #         order_obj.service_list.add(i)
+
+
+        type_id_list = []
+        # for key, values in type_dic.items():
+        #     if values == 0:
+        #         continue
+        #     type_id_list.append(type_obj_list[int(key)].id)
+        #     new_type_obj = OrderType.objects.filter(id=type_obj_list[int(key)].id).first()
+        #     text_str += f'类型:{new_type_obj.name},数量:{values}; '
+        #
+        # type_obj = OrderType.objects.filter(id__in=type_id_list).all()
+
+        # if type_obj:
+        #
+        #     if juese == 0:
+        #
+        #         UpdateOrder.objects.create(desc=desc, level=level, date=date, end_address=end_address,
+        #                                    connect_user=connect_user, connect_phone=connect_phone, type_str=text_str,
+        #                                    price=price)
+        #         UpdateOrder_obj = UpdateOrder.objects.all().order_by('-id').first()
+        #         for i in type_obj:
+        #             UpdateOrder_obj.type.add(i)
+        #         Order.objects.filter(id=order_id).update(update_order=UpdateOrder_obj)
+        #         return ApiResponse()
+        #     else:
+        #         order_obj = Order.objects.filter(id=order_id).first()
+        #         for i in type_obj:
+        #             order_obj.type.add(i)
+        #         Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date, end_address=end_address,
+        #                                                  connect_user=connect_user, connect_phone=connect_phone,
+        #                                                  type_str=text_str, price=price)
+        #         return ApiResponse()
 
 
 # 获取修改的订单
 class GetUpdateOrderView(GenericViewSet, ListModelMixin):
-    queryset = UpdateOrder.objects.all().order_by('-id')
+    # queryset = UpdateOrder.objects.all()
     serializer_class = GetUpdateOrderSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ['id', ]
+
+    def get_queryset(self):
+        # 获取请求参数中的 id
+        order_id = self.request.query_params.get('id', None)
+        if order_id:
+            return UpdateOrder.objects.filter(id=order_id)
+        else:
+            return UpdateOrder.objects.all().order_by('-id')
+
+
 
 
 class ConfirmOrderView(APIView):
@@ -499,28 +556,29 @@ class ConfirmOrderView(APIView):
         desc = update_order.desc
         level = update_order.level
         date = update_order.date
-        end_address = update_order.end_address
+        # end_address = update_order.end_address
         connect_user = update_order.connect_user
         connect_phone = update_order.connect_phone
-        type_str = update_order.type_str
+        # type_str = update_order.type_str
         price = update_order.price
 
-        type_id_list = []
+        service_id_list = []
 
-        for i in update_order.type.all():
-            type_id_list.append(i.id)
+        for i in update_order.service_list.all():
+            service_id_list.append(i.id)
 
         order_obj = Order.objects.filter(id=order_id).first()
+        order_obj.service_list.clear()
 
-        type_obj = OrderType.objects.filter(id__in=type_id_list).all()
-        if type_obj:
-            for k in type_obj:
-                order_obj.type.add(k)
+        service_obj = Service.objects.filter(id__in=service_id_list).all()
+        if service_obj:
+            for k in service_obj:
+                order_obj.service_list.add(k)
 
-        Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date, end_address=end_address,
+        Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date,
                                                  connect_user=connect_user,
                                                  connect_phone=connect_phone, update_order=None, price=price,
-                                                 type_str=type_str)
+                                                )
 
         return ApiResponse()
 

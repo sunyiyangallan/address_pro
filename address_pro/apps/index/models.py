@@ -106,6 +106,7 @@ class UpdateOrder(BaseModel):
     type = models.ManyToManyField(to='OrderType', verbose_name='类型', null=True, blank=True)
     price = models.FloatField(verbose_name='价格', default=0)
     type_str = models.TextField(verbose_name='类型描述', null=True, blank=True)
+    service_list = models.ManyToManyField(to='Service', verbose_name='服务', null=True, blank=True)
 
 
 class ServiceType(BaseModel):
