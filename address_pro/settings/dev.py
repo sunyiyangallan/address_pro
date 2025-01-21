@@ -175,7 +175,7 @@ SIMPLEUI_LOGO = 'https://cdn.huaxinda.top/settings.svg'
 
 SIMPLEUI_CONFIG = {
     'system_keep': False,
-    'menu_display': ['用户', '设置', '订单', '订单类型设置'],  # 开启排序和过滤功能, 不填此字段为默认排序和全部显示, 空列表[] 为全部不显示.
+    'menu_display': ['用户', '设置', '订单', '订单类型设置', '地址设置', '服务类型设置', '服务'],  # 开启排序和过滤功能, 不填此字段为默认排序和全部显示, 空列表[] 为全部不显示.
     'dynamic': True,  # 设置是否开启动态菜单, 默认为False. 如果开启, 则会在每次用户登陆时动态展示菜单内容
     'menus': [
 
@@ -191,17 +191,35 @@ SIMPLEUI_CONFIG = {
             'icon': 'fas fa-user-shield',
             'url': 'index/basesettings'
         },
-{
+        {
             'app': 'index',  # 关联哪个app
             'name': '订单',
             'icon': 'fas fa-user-shield',
             'url': 'index/order'
         },
-{
+        {
             'app': 'index',  # 关联哪个app
             'name': '订单类型设置',
             'icon': 'fas fa-user-shield',
             'url': 'index/ordertype'
+        },
+{
+            'app': 'index',  # 关联哪个app
+            'name': '地址设置',
+            'icon': 'fas fa-user-shield',
+            'url': 'index/address'
+        },
+{
+            'app': 'index',  # 关联哪个app
+            'name': '服务类型设置',
+            'icon': 'fas fa-user-shield',
+            'url': 'index/servicetype'
+        },
+{
+            'app': 'index',  # 关联哪个app
+            'name': '服务',
+            'icon': 'fas fa-user-shield',
+            'url': 'index/service'
         },
 
     ]

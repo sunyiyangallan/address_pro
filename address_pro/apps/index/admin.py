@@ -73,3 +73,54 @@ class FlowerAdmin(admin.ModelAdmin):
         )
 
     caozuo.short_description = u'操作'
+
+
+@admin.register(ServiceType)
+class FlowerAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'caozuo',)
+
+    def caozuo(self, obj):
+        edit_url = reverse('admin:index_servicetype_change', args=[obj.pk])
+        delete_url = reverse('admin:index_servicetype_delete', args=[obj.pk])
+        return format_html(
+
+            f'<a href="{edit_url}" style="color: red;">编辑</a> | <a href="{delete_url}" style="color: red;">删除</a>'
+
+        )
+
+    caozuo.short_description = u'操作'
+
+
+@admin.register(Address)
+class FlowerAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'caozuo',)
+
+    def caozuo(self, obj):
+        edit_url = reverse('admin:index_address_change', args=[obj.pk])
+        delete_url = reverse('admin:index_address_delete', args=[obj.pk])
+        return format_html(
+
+            f'<a href="{edit_url}" style="color: red;">编辑</a> | <a href="{delete_url}" style="color: red;">删除</a>'
+
+        )
+
+    caozuo.short_description = u'操作'
+
+
+@admin.register(Service)
+class FlowerAdmin(admin.ModelAdmin):
+    list_display = (
+        'service_type', 'address', 'category', 'price', 'caozuo',)
+
+    def caozuo(self, obj):
+        edit_url = reverse('admin:index_service_change', args=[obj.pk])
+        delete_url = reverse('admin:index_service_delete', args=[obj.pk])
+        return format_html(
+
+            f'<a href="{edit_url}" style="color: red;">编辑</a> | <a href="{delete_url}" style="color: red;">删除</a>'
+
+        )
+
+    caozuo.short_description = u'操作'

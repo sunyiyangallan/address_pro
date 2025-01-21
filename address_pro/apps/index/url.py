@@ -14,6 +14,8 @@ router.register('get_one_order', views.GetOneOrderView, 'get_one_order')
 router.register('get_null_order', views.NullOrderView, 'get_null_order')
 router.register('get_order_type', views.GetOrderTypeView, 'get_order_type')
 router.register('get_update_order', views.GetUpdateOrderView, 'get_update_order')
+router.register('get_all_service_type', views.GetAllServiceTypeView, 'get_all_service_type')
+router.register('get_all_address', views.GetAllAddressView, 'get_all_address')
 
 
 urlpatterns = [
@@ -31,6 +33,7 @@ urlpatterns = [
     path('pai_update_order/', views.PaiUpdateOrderView.as_view()),
     path('get_max/', views.GetMaxView.as_view()),
     path('confirm_order/', views.ConfirmOrderView.as_view()),
+    path('get_service/', views.GetServiceView.as_view()),
 
 
 ]

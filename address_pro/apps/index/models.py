@@ -66,7 +66,8 @@ class Order(BaseModel):
     level = models.SmallIntegerField(choices=((0, '普通'), (1, '加急'), (2, '紧急')), verbose_name='优先级', default=0)
     date = models.DateTimeField(verbose_name='截至日期', null=True, blank=True)
     is_valid = models.BooleanField(verbose_name='是否有效', default=True)
-    state = models.SmallIntegerField(choices=((-1, '未分配'),(0, '未开始'), (1, '进行中'), (2, '已完成')), verbose_name='状态', default=-1)
+    state = models.SmallIntegerField(choices=((-1, '未分配'), (0, '未开始'), (1, '进行中'), (2, '已完成')), verbose_name='状态',
+                                     default=-1)
     start_time = models.DateTimeField(verbose_name='开始时间', null=True, blank=True)
     end_time = models.DateTimeField(verbose_name='结束时间', null=True, blank=True)
     start_address = models.CharField(verbose_name='起始地', max_length=125, null=True, blank=True)
@@ -80,9 +81,10 @@ class Order(BaseModel):
     type = models.ManyToManyField(to='OrderType', verbose_name='类型', null=True, blank=True)
     price = models.FloatField(verbose_name='价格', default=0)
     is_reback = models.BooleanField(verbose_name='是否修改', default=False)
-    update_order = models.OneToOneField(to='UpdateOrder', on_delete=models.CASCADE, null=True, blank=True,)
+    update_order = models.OneToOneField(to='UpdateOrder', on_delete=models.CASCADE, null=True, blank=True, )
     type_str = models.TextField(verbose_name='类型描述', null=True, blank=True)
 
+    service_list = models.ManyToManyField(to='Service', verbose_name='服务', null=True, blank=True)
 
 
 class OrderType(BaseModel):
@@ -104,3 +106,25 @@ class UpdateOrder(BaseModel):
     type = models.ManyToManyField(to='OrderType', verbose_name='类型', null=True, blank=True)
     price = models.FloatField(verbose_name='价格', default=0)
     type_str = models.TextField(verbose_name='类型描述', null=True, blank=True)
+
+
+class ServiceType(BaseModel):
+    name = models.CharField(verbose_name='服务类型名称', max_length=64, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Address(BaseModel):
+    name = models.CharField(verbose_name='地址名称', max_length=64, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Service(BaseModel):
+    address = models.ForeignKey(to='Address', verbose_name='地址', null=True, blank=True, on_delete=models.CASCADE)
+    service_type = models.ForeignKey(to='ServiceType', verbose_name='服务类型', null=True, blank=True, on_delete=models.CASCADE)
+    category = models.CharField(verbose_name='种类', max_length=128, null=True, blank=True)
+    price = models.FloatField(verbose_name='价格', null=True, blank=True)
+
