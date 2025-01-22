@@ -85,7 +85,7 @@ class Order(BaseModel):
     type_str = models.TextField(verbose_name='类型描述', null=True, blank=True)
 
     service_list = models.ManyToManyField(to='Service', verbose_name='服务', null=True, blank=True)
-
+    remark = models.TextField(verbose_name='备注', null=True, blank=True)
 
 class OrderType(BaseModel):
     name = models.CharField(verbose_name='类型名称', max_length=64, null=True, blank=True)
@@ -107,6 +107,7 @@ class UpdateOrder(BaseModel):
     price = models.FloatField(verbose_name='价格', default=0)
     type_str = models.TextField(verbose_name='类型描述', null=True, blank=True)
     service_list = models.ManyToManyField(to='Service', verbose_name='服务', null=True, blank=True)
+    remark = models.TextField(verbose_name='备注', null=True, blank=True)
 
 
 class ServiceType(BaseModel):
@@ -128,4 +129,6 @@ class Service(BaseModel):
     service_type = models.ForeignKey(to='ServiceType', verbose_name='服务类型', null=True, blank=True, on_delete=models.CASCADE)
     category = models.CharField(verbose_name='种类', max_length=128, null=True, blank=True)
     price = models.FloatField(verbose_name='价格', null=True, blank=True)
+
+
 

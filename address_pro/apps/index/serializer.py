@@ -39,7 +39,7 @@ class GetAllOrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'user_name', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time',
                   'start_address',
                   'end_address', 'start_location', 'end_location', 'uuid', 'num', 'shunxu', 'connect_user',
-                  'connect_phone', 'type_name', 'price', 'is_reback', 'update_order', 'service_list']
+                  'connect_phone', 'type_name', 'price', 'is_reback', 'update_order', 'service_list', 'remark']
 
 
 class GetUserSerializer(serializers.ModelSerializer):
@@ -51,13 +51,14 @@ class GetUserSerializer(serializers.ModelSerializer):
 class GetOneOrderSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source='user.name', read_only=True)
     type_name = serializers.CharField(source='type_str', read_only=True)
+    service_list = ServiceSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order
         fields = ['id', 'user_name', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time',
                   'start_address',
                   'end_address', 'start_location', 'end_location', 'uuid', 'shunxu', 'connect_user', 'connect_phone',
-                  'type_name', 'price', 'is_reback']
+                  'type_name', 'price', 'is_reback', 'remark','service_list' ]
 
 
 class GetOrderTypeSerializer(serializers.ModelSerializer):
@@ -74,7 +75,7 @@ class GetUpdateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = UpdateOrder
         fields = ['desc', 'level', 'date',
-                  'end_address', 'connect_user', 'connect_phone', 'price', 'num', 'id', 'type_name', 'service_list']
+                  'end_address', 'connect_user', 'connect_phone', 'price', 'num', 'id', 'type_name', 'service_list','remark']
 
 
 class GetAllServiceTypeSerializer(serializers.ModelSerializer):
@@ -93,3 +94,5 @@ class GetServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = ['id', 'address', 'service_type', 'category', 'price']
+
+

@@ -330,12 +330,13 @@ class CreateOrderView(APIView):
         desc = request.data.get('desc')
         level = int(request.data.get('level'))
         date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
-        # end_address = request.data.get('search_end')
+        end_address = request.data.get('search_end')
         # type_dic = request.data.get('search_num')
         price = request.data.get('price')
         service_list = request.data.get('service_list')
         connect_user = request.data.get('connect_user')
         connect_phone = request.data.get('connect_phone')
+        remark = request.data.get('remark')
 
         text_str = ''
 
@@ -345,7 +346,7 @@ class CreateOrderView(APIView):
 
         service_obj = Service.objects.filter(id__in=service_id_list).all()
 
-        Order.objects.create(desc=desc, level=level, date=date,
+        Order.objects.create(desc=desc, level=level, date=date,end_address=end_address,remark=remark,
                              price=price, connect_user=connect_user, connect_phone=connect_phone)
 
         order_obj = Order.objects.all().order_by('-id').first()
@@ -440,9 +441,10 @@ class PaiUpdateOrderView(APIView):
 
         order_id = request.data.get('order_id')
         desc = request.data.get('desc')
+        remark = request.data.get('remark')
         level = int(request.data.get('level'))
         date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
-        # end_address = request.data.get('search_end')
+        end_address = request.data.get('search_end')
         # type_dic = request.data.get('search_num')
         service_list = request.data.get('service_list')
         price = request.data.get('price')
@@ -460,7 +462,7 @@ class PaiUpdateOrderView(APIView):
 
         if service_obj:
             if juese == 0:
-                UpdateOrder.objects.create(desc=desc, level=level, date=date,
+                UpdateOrder.objects.create(desc=desc, level=level, date=date,end_address=end_address,remark=remark,
                                                    connect_user=connect_user, connect_phone=connect_phone,
                                                    price=price)
                 UpdateOrder_obj = UpdateOrder.objects.all().order_by('-id').first()
@@ -482,7 +484,7 @@ class PaiUpdateOrderView(APIView):
                     order_obj.service_list.clear()
                 for i in service_obj:
                     order_obj.service_list.add(i)
-                Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date,
+                Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date,end_address=end_address,remark=remark,
                                                          connect_user=connect_user, connect_phone=connect_phone,
                                                           price=price)
                 return ApiResponse()
@@ -556,9 +558,10 @@ class ConfirmOrderView(APIView):
         desc = update_order.desc
         level = update_order.level
         date = update_order.date
-        # end_address = update_order.end_address
+        end_address = update_order.end_address
         connect_user = update_order.connect_user
         connect_phone = update_order.connect_phone
+        remark = update_order.remark
         # type_str = update_order.type_str
         price = update_order.price
 
@@ -575,7 +578,7 @@ class ConfirmOrderView(APIView):
             for k in service_obj:
                 order_obj.service_list.add(k)
 
-        Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date,
+        Order.objects.filter(id=order_id).update(desc=desc, level=level, date=date,end_address=end_address,remark=remark,
                                                  connect_user=connect_user,
                                                  connect_phone=connect_phone, update_order=None, price=price,
                                                 )
@@ -615,3 +618,38 @@ class GetServiceView(APIView):
             data_list.append({'name':i.category, 'price':i.price, 'id': i.id, 'text':i.service_type.name + i.address.name + i.category})
 
         return ApiResponse(data=data_list)
+
+
+
+
+# 更新服务
+class UpdateServiceTypeView(APIView):
+    def get(self,request):
+        name = request.query_params.get('name', None)
+        id = request.query_params.get('id', None)
+        service_type_obj = ServiceType.objects.filter(name=name).first()
+
+        if service_type_obj:
+            return ApiResponse(code=111)
+        else:
+            new_service_type_obj = ServiceType.objects.filter(id=id).first()
+            new_service_type_obj.name = name
+            new_service_type_obj.save()
+            return ApiResponse()
+
+
+class CreateServiceTypeView(APIView):
+    def get(self,request):
+        name = request.query_params.get('name', None)
+
+        service_type_obj = ServiceType.objects.filter(name=name).first()
+
+        if service_type_obj:
+            return ApiResponse(code=111)
+        else:
+            ServiceType.objects.create(name=name)
+
+            return ApiResponse()
+
+
+

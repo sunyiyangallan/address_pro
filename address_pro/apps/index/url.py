@@ -34,6 +34,8 @@ urlpatterns = [
     path('get_max/', views.GetMaxView.as_view()),
     path('confirm_order/', views.ConfirmOrderView.as_view()),
     path('get_service/', views.GetServiceView.as_view()),
+    path('update_service_type/', views.UpdateServiceTypeView.as_view()),
+    path('create_service_type/', views.CreateServiceTypeView.as_view()),
 
 
 ]
