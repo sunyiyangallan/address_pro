@@ -6,7 +6,7 @@ from address_pro.utils.md5 import md5_encrypt
 from .models import AddressUser, BaseSettings, Order, OrderType, UpdateOrder, ServiceType, Address, Service
 from .serializer import GetLoginImgSerializer, GetJueSeSerializer, GetUserInfoSerializer, GetAllOrderSerializer, \
     GetUserSerializer, GetOneOrderSerializer, GetOrderTypeSerializer, GetUpdateOrderSerializer, \
-    GetAllServiceTypeSerializer, GetAllAddressSerializer
+    GetAllServiceTypeSerializer, GetAllAddressSerializer, ServiceSerializer
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
@@ -327,7 +327,7 @@ class GetAllCommonUserView(GenericViewSet, ListModelMixin):
 # 创建订单
 class CreateOrderView(APIView):
     def post(self, request):
-        desc = request.data.get('desc')
+        desc = request.data.get('desc', '')
         level = int(request.data.get('level'))
         date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
         end_address = request.data.get('search_end')
@@ -442,8 +442,22 @@ class PaiUpdateOrderView(APIView):
         order_id = request.data.get('order_id')
         desc = request.data.get('desc')
         remark = request.data.get('remark')
-        level = int(request.data.get('level'))
-        date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
+
+        try:
+            level = int(request.data.get('level'))
+        except:
+            if request.data.get('level') == '普通':
+                level = 0
+            elif request.data.get('level') == '加急':
+                level = 1
+            else:
+                level = 2
+
+        try:
+            date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
+        except:
+            date = request.data.get('time3')
+
         end_address = request.data.get('search_end')
         # type_dic = request.data.get('search_num')
         service_list = request.data.get('service_list')
@@ -624,18 +638,56 @@ class GetServiceView(APIView):
 
 # 更新服务
 class UpdateServiceTypeView(APIView):
-    def get(self,request):
-        name = request.query_params.get('name', None)
-        id = request.query_params.get('id', None)
-        service_type_obj = ServiceType.objects.filter(name=name).first()
+    def post(self,request):
+        fuwu_name = request.data.get('fuwu_name', None)
+        address_name = request.data.get('address_name', None)
+        category_name = request.data.get('category_name', None)
+        change_price = request.data.get('change_price', None)
+        id = request.data.get('id', None)
+        service_obj = Service.objects.filter(id=id).first()
 
-        if service_type_obj:
-            return ApiResponse(code=111)
-        else:
-            new_service_type_obj = ServiceType.objects.filter(id=id).first()
-            new_service_type_obj.name = name
-            new_service_type_obj.save()
-            return ApiResponse()
+        if fuwu_name:
+            service_type_obj = ServiceType.objects.filter(name=fuwu_name).first()
+            if service_type_obj:
+                service_obj.service_type = service_type_obj
+                service_obj.save()
+            else:
+                ServiceType.objects.create(name=fuwu_name)
+                service_type_obj = ServiceType.objects.filter(name=fuwu_name).first()
+                service_obj.service_type = service_type_obj
+                service_obj.save()
+
+        if address_name:
+            address_obj = Address.objects.filter(name=address_name).first()
+            if address_obj:
+                service_obj.address = address_obj
+                service_obj.save()
+            else:
+                Address.objects.create(name=address_name)
+                address_obj = Address.objects.filter(name=address_name).first()
+                service_obj.address = address_obj
+                service_obj.save()
+
+        if category_name:
+            service_obj.category = category_name
+            service_obj.save()
+
+        if change_price:
+            service_obj.price = change_price
+            service_obj.save()
+
+
+        return ApiResponse()
+
+        # service_type_obj = ServiceType.objects.filter(name=name).first()
+
+        # if service_type_obj:
+        #     return ApiResponse(code=111)
+        # else:
+        #     new_service_type_obj = ServiceType.objects.filter(id=id).first()
+        #     new_service_type_obj.name = name
+        #     new_service_type_obj.save()
+        #     return ApiResponse()
 
 
 class CreateServiceTypeView(APIView):
@@ -652,4 +704,38 @@ class CreateServiceTypeView(APIView):
             return ApiResponse()
 
 
+# 获得所有服务信息
+class GetAllServiceView(GenericViewSet,ListModelMixin):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
 
+# 创建新服务
+class CreateNewServiceView(APIView):
+    def post(self,request):
+        service_type = request.data.get('fuwu_name2', None)
+        address = request.data.get('address_name2', None)
+        category = request.data.get('category_name2', None)
+        price = request.data.get('new_price', None)
+        service_type_obj = None
+        address_obj = None
+
+        if service_type:
+            service_type_obj = ServiceType.objects.filter(name=service_type).first()
+            if not service_type_obj:
+                ServiceType.objects.create(name=service_type)
+                service_type_obj = ServiceType.objects.filter(name=service_type).first()
+
+
+        if address:
+            address_obj = Address.objects.filter(name=address).first()
+            if not address_obj:
+                Address.objects.create(name=address)
+                address_obj = Address.objects.filter(name=address).first()
+
+
+        Service_obj = Service.objects.filter(service_type=service_type_obj, address=address_obj, category=category, price=price).first()
+        if Service_obj:
+            return ApiResponse(code=111)
+        else:
+            Service.objects.create(service_type=service_type_obj, address=address_obj, category=category, price=price)
+            return ApiResponse()

@@ -16,6 +16,7 @@ router.register('get_order_type', views.GetOrderTypeView, 'get_order_type')
 router.register('get_update_order', views.GetUpdateOrderView, 'get_update_order')
 router.register('get_all_service_type', views.GetAllServiceTypeView, 'get_all_service_type')
 router.register('get_all_address', views.GetAllAddressView, 'get_all_address')
+router.register('get_all_service', views.GetAllServiceView, 'get_all_service')
 
 
 urlpatterns = [
@@ -36,6 +37,7 @@ urlpatterns = [
     path('get_service/', views.GetServiceView.as_view()),
     path('update_service_type/', views.UpdateServiceTypeView.as_view()),
     path('create_service_type/', views.CreateServiceTypeView.as_view()),
+    path('create_new_service/', views.CreateNewServiceView.as_view()),
 
 
 ]
