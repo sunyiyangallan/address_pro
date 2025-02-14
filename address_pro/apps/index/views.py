@@ -294,9 +294,9 @@ class GetJueSeView(APIView):
         count3 = AddressUser.objects.filter(juese=2).count()
 
         data = [
-            {'value': count3, 'name': '管理员'},
-            {'value': count1, 'name': '送货员'},
-            {'value': count2, 'name': '派单员'},
+            {'value': count3, 'name': 'Admin'},
+            {'value': count1, 'name': 'Driver'},
+            {'value': count2, 'name': 'Dispatcher'},
         ]
 
         return ApiResponse(data=data)
@@ -310,9 +310,9 @@ class GetOrderStateView(APIView):
         count3 = Order.objects.filter(state=2).count()
 
         data = [
-            {'value': count1, 'name': '未开始'},
-            {'value': count2, 'name': '进行中'},
-            {'value': count3, 'name': '已完成'},
+            {'value': count1, 'name': 'unstarted orders'},
+            {'value': count2, 'name': 'Ongoing Orders'},
+            {'value': count3, 'name': 'Completed Orders'},
         ]
 
         return ApiResponse(data=data)
@@ -446,9 +446,9 @@ class PaiUpdateOrderView(APIView):
         try:
             level = int(request.data.get('level'))
         except:
-            if request.data.get('level') == '普通':
+            if request.data.get('level') == 'Low':
                 level = 0
-            elif request.data.get('level') == '加急':
+            elif request.data.get('level') == 'Mid':
                 level = 1
             else:
                 level = 2
@@ -739,3 +739,14 @@ class CreateNewServiceView(APIView):
         else:
             Service.objects.create(service_type=service_type_obj, address=address_obj, category=category, price=price)
             return ApiResponse()
+
+
+
+# 删除
+class DeleteView(APIView):
+    def get(self,request):
+        id = request.query_params.get('id', None)
+        service_obj = Service.objects.filter(id=id).first()
+        service_obj.delete()
+
+        return ApiResponse()

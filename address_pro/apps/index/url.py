@@ -38,6 +38,7 @@ urlpatterns = [
     path('update_service_type/', views.UpdateServiceTypeView.as_view()),
     path('create_service_type/', views.CreateServiceTypeView.as_view()),
     path('create_new_service/', views.CreateNewServiceView.as_view()),
+    path('delete_service/', views.DeleteView.as_view()),
 
 
 ]

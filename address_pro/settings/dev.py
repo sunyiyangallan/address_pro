@@ -102,9 +102,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'zh-hans'
+# LANGUAGE_CODE = 'zh-hans'
+#
+# TIME_ZONE = 'Asia/Shanghai'
 
-TIME_ZONE = 'Asia/Shanghai'
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -175,49 +180,49 @@ SIMPLEUI_LOGO = 'https://cdn.huaxinda.top/settings.svg'
 
 SIMPLEUI_CONFIG = {
     'system_keep': False,
-    'menu_display': ['用户', '设置', '订单', '订单类型设置', '地址设置', '服务类型设置', '服务'],  # 开启排序和过滤功能, 不填此字段为默认排序和全部显示, 空列表[] 为全部不显示.
+    'menu_display': ['user', 'settings', 'order', 'order_type_settings', 'address_settings', 'service_type_settings', 'service'],  # 开启排序和过滤功能, 不填此字段为默认排序和全部显示, 空列表[] 为全部不显示.
     'dynamic': True,  # 设置是否开启动态菜单, 默认为False. 如果开启, 则会在每次用户登陆时动态展示菜单内容
     'menus': [
 
         {
             'app': 'index',  # 关联哪个app
-            'name': '用户',
+            'name': 'user',
             'icon': 'fas fa-user-shield',
             'url': 'index/addressuser'
         },
         {
             'app': 'index',  # 关联哪个app
-            'name': '设置',
+            'name': 'settings',
             'icon': 'fas fa-user-shield',
             'url': 'index/basesettings'
         },
         {
             'app': 'index',  # 关联哪个app
-            'name': '订单',
+            'name': 'order',
             'icon': 'fas fa-user-shield',
             'url': 'index/order'
         },
         {
             'app': 'index',  # 关联哪个app
-            'name': '订单类型设置',
+            'name': 'order_type_settings',
             'icon': 'fas fa-user-shield',
             'url': 'index/ordertype'
         },
 {
             'app': 'index',  # 关联哪个app
-            'name': '地址设置',
+            'name': 'address_settings',
             'icon': 'fas fa-user-shield',
             'url': 'index/address'
         },
 {
             'app': 'index',  # 关联哪个app
-            'name': '服务类型设置',
+            'name': 'service_type_settings',
             'icon': 'fas fa-user-shield',
             'url': 'index/servicetype'
         },
 {
             'app': 'index',  # 关联哪个app
-            'name': '服务',
+            'name': 'service',
             'icon': 'fas fa-user-shield',
             'url': 'index/service'
         },
