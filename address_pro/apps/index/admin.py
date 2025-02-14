@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.contrib.auth.hashers import make_password
 
-admin.site.site_header = '管理后台'  # 设置header
-admin.site.site_title = '管理后台'  # 设置title
+admin.site.site_header = 'manage backend'  # 设置header
+admin.site.site_title = 'manage backend'  # 设置title
 
 
 @admin.register(AddressUser)

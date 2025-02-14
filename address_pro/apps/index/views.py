@@ -750,3 +750,13 @@ class DeleteView(APIView):
         service_obj.delete()
 
         return ApiResponse()
+
+
+class DeleteOrderView(APIView):
+
+    def get(self,request):
+        id = request.query_params.get('id', None)
+        order_obj = Order.objects.filter(id=id).first()
+        order_obj.delete()
+
+        return ApiResponse()

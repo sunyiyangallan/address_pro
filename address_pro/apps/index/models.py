@@ -43,7 +43,7 @@ class BaseSettings(BaseModel):
     media_url = models.CharField(verbose_name='media_url', max_length=64, null=True, blank=True)
     img = models.FileField(upload_to='avatar', verbose_name='backend_img', null=True, blank=True)
     gaode_key = models.CharField(verbose_name='gaode_key', max_length=128, null=True, blank=True)
-    code = models.CharField(verbose_name='shouquan_code', max_length=64, null=True, blank=True)
+    code = models.CharField(verbose_name='auth_code', max_length=64, null=True, blank=True)
 
     class Meta:
         db_table = 'base_settings'
@@ -75,7 +75,7 @@ class Order(BaseModel):
     start_location = models.CharField(verbose_name='start_location', max_length=125, null=True, blank=True)
     end_location = models.CharField(verbose_name='end_location', max_length=125, null=True, blank=True)
     num = models.IntegerField(verbose_name='num', default=0, null=True, blank=True)
-    shunxu = models.IntegerField(verbose_name='shunxu', null=True, blank=True)
+    shunxu = models.IntegerField(verbose_name='order', null=True, blank=True)
     connect_user = models.CharField(verbose_name='connect_user', max_length=64, null=True, blank=True)
     connect_phone = models.CharField(verbose_name='connect_phone', max_length=64, null=True, blank=True)
     type = models.ManyToManyField(to='OrderType', verbose_name='type', null=True, blank=True)
