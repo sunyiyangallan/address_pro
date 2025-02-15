@@ -329,7 +329,8 @@ class CreateOrderView(APIView):
     def post(self, request):
         desc = request.data.get('desc', '')
         level = int(request.data.get('level'))
-        date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
+        # date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
+        date = request.data.get('time3')
         end_address = request.data.get('search_end')
         # type_dic = request.data.get('search_num')
         price = request.data.get('price')
@@ -454,9 +455,10 @@ class PaiUpdateOrderView(APIView):
                 level = 2
 
         try:
-            date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
-        except:
             date = request.data.get('time3')
+
+        except:
+            date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
 
         end_address = request.data.get('search_end')
         # type_dic = request.data.get('search_num')

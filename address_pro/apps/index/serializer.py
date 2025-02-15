@@ -58,7 +58,7 @@ class GetOneOrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'user_name', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time',
                   'start_address',
                   'end_address', 'start_location', 'end_location', 'uuid','num', 'shunxu', 'connect_user', 'connect_phone',
-                  'type_name', 'price', 'is_reback', 'remark','service_list' ]
+                  'type_name', 'price', 'is_reback', 'remark','service_list','update_order' ]
 
 
 class GetOrderTypeSerializer(serializers.ModelSerializer):
