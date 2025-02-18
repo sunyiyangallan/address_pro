@@ -263,15 +263,6 @@ if QINIU:
 
     # print(MEDIA_ROOT, MEDIA_URL)
 
-# 邮箱配置
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.qq.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = '275876954@qq.com'
-EMAIL_HOST_PASSWORD = 'xpzhkoovtzhgbhgc'
-DEFAULT_FROM_EMAIL = '275876954@qq.com'
-
 # 跨域
 # 跨域问题的中间件
 CORS_ORIGIN_ALLOW_ALL = True  # 允许所有域发请求，等同于response["Access-Control-Allow-Origin"] = "*"
