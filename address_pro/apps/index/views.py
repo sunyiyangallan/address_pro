@@ -3,7 +3,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin
 from utils.response import ApiResponse
 from address_pro.utils.md5 import md5_encrypt
-from .models import AddressUser, BaseSettings, Order, OrderType, UpdateOrder, ServiceType, Address, Service
+from .models import AddressUser, BaseSettings, Order, OrderType, UpdateOrder, ServiceType, Address, Service, OrderService
 from .serializer import GetLoginImgSerializer, GetJueSeSerializer, GetUserInfoSerializer, GetAllOrderSerializer, \
     GetUserSerializer, GetOneOrderSerializer, GetOrderTypeSerializer, GetUpdateOrderSerializer, \
     GetAllServiceTypeSerializer, GetAllAddressSerializer, ServiceSerializer
@@ -327,50 +327,54 @@ class GetAllCommonUserView(GenericViewSet, ListModelMixin):
 # 创建订单
 class CreateOrderView(APIView):
     def post(self, request):
+        print("=== DEBUG START ===")
+        service_list = request.data.get('service_list')
+        print("Original service_list:", service_list)  # Let's see the structure
+        
         desc = request.data.get('desc', '')
         level = int(request.data.get('level'))
-        # date = datetime.strptime(request.data.get('time3'), '%Y-%m-%dT%H:%M:%S.%fZ')
         date = request.data.get('time3')
         end_address = request.data.get('search_end')
-        # type_dic = request.data.get('search_num')
         price = request.data.get('price')
-        service_list = request.data.get('service_list')
         connect_user = request.data.get('connect_user')
         connect_phone = request.data.get('connect_phone')
         remark = request.data.get('remark')
 
-        text_str = ''
+        # Create order first
+        order_obj = Order.objects.create(
+            desc=desc, 
+            level=level, 
+            date=date,
+            end_address=end_address,
+            remark=remark,
+            price=price, 
+            connect_user=connect_user, 
+            connect_phone=connect_phone
+        )
 
-        service_id_list = []
-        for i in service_list:
-            service_id_list.append(i.get('id'))
+        # Add services using the through model, respecting quantities
+        for service_item in service_list:
+            service_id = service_item.get('id')
+            quantity = service_item.get('quantity', 1)  # Default to 1 if not specified
+            print(f"Adding service ID {service_id} with quantity {quantity}")
+            
+            try:
+                service = Service.objects.get(id=service_id)
+                # Create multiple OrderService entries based on quantity
+                for _ in range(quantity):
+                    OrderService.objects.create(
+                        order=order_obj,
+                        service=service
+                    )
+                print(f"Successfully added {quantity} instances of service: {service.id}")
+            except Exception as e:
+                print(f"Error adding service: {str(e)}")
 
-        service_obj = Service.objects.filter(id__in=service_id_list).all()
-
-        Order.objects.create(desc=desc, level=level, date=date,end_address=end_address,remark=remark,
-                             price=price, connect_user=connect_user, connect_phone=connect_phone)
-
-        order_obj = Order.objects.all().order_by('-id').first()
-        if service_obj:
-            for i in service_obj:
-                order_obj.service_list.add(i)
-
-        # type_obj_list = OrderType.objects.all().order_by('id')
-        type_id_list = []
-        # for key, values in type_dic.items():
-        #     if values == 0:
-        #         continue
-        #     type_id_list.append(type_obj_list[int(key)].id)
-        #     new_type_obj = OrderType.objects.filter(id=type_obj_list[int(key)].id).first()
-        #     text_str += f'类型:{new_type_obj.name},数量:{values}; '
-        #
-        # type_obj = OrderType.objects.filter(id__in=type_id_list).all()
-        # Order.objects.create(desc=desc, level=level, date=date, end_address=end_address,
-        #                      price=price, connect_user=connect_user, connect_phone=connect_phone, type_str=text_str)
-        # order_obj = Order.objects.all().order_by('-id').first()
-        # if type_obj:
-        #     for i in type_obj:
-        #         order_obj.type.add(i)
+        # Verify the services were added
+        final_services = OrderService.objects.filter(order=order_obj)
+        print(f"Final services count: {final_services.count()}")
+        print("Final services:", list(final_services.values('service_id')))
+        print("=== DEBUG END ===")
 
         return ApiResponse()
 
@@ -631,6 +635,7 @@ class GetServiceView(APIView):
             service_obj = Service.objects.filter(service_type_id=int(service_id)).all()
 
         for i in service_obj:
+            print(f"Service Type: {i.service_type.name}, Address: {i.address.name}, Category: {i.category}")
             data_list.append({'name':i.category, 'price':i.price, 'id': i.id, 'text':i.service_type.name + i.address.name + i.category})
 
         return ApiResponse(data=data_list)

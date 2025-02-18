@@ -43,16 +43,22 @@ class FlowerAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class FlowerAdmin(admin.ModelAdmin):
     list_display = (
-        'shunxu', 'user', 'desc', 'level', 'date', 'is_valid', 'state', 'start_time', 'end_time', 'start_address',
-        'end_address', 'connect_user', 'connect_phone', 'caozuo',)
+        'id', 'shunxu', 'user', 'desc', 'level', 'date', 'is_valid', 'state', 
+        'start_time', 'end_time', 'start_address', 'end_address', 
+        'connect_user', 'connect_phone', 'price', 'get_services', 'caozuo',
+    )
+
+    def get_services(self, obj):
+        services = OrderService.objects.filter(order=obj)
+        return ", ".join([f"{s.service.category} ({s.service.price})" for s in services])
+    
+    get_services.short_description = 'Services'
 
     def caozuo(self, obj):
         edit_url = reverse('admin:index_order_change', args=[obj.pk])
         delete_url = reverse('admin:index_order_delete', args=[obj.pk])
         return format_html(
-
             f'<a href="{edit_url}" style="color: red;">edit</a> | <a href="{delete_url}" style="color: red;">delete</a>'
-
         )
 
     caozuo.short_description = u'operation'
@@ -110,17 +116,12 @@ class FlowerAdmin(admin.ModelAdmin):
 
 
 @admin.register(Service)
-class FlowerAdmin(admin.ModelAdmin):
-    list_display = (
-        'service_type', 'address', 'category', 'price', 'caozuo',)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ['id', 'category', 'service_type', 'address', 'price']
+    search_fields = ['category']
 
-    def caozuo(self, obj):
-        edit_url = reverse('admin:index_service_change', args=[obj.pk])
-        delete_url = reverse('admin:index_service_delete', args=[obj.pk])
-        return format_html(
 
-            f'<a href="{edit_url}" style="color: red;">edit</a> | <a href="{delete_url}" style="color: red;">delete</a>'
-
-        )
-
-    caozuo.short_description = u'operation'
+@admin.register(OrderService)
+class OrderServiceAdmin(admin.ModelAdmin):
+    list_display = ['id', 'order', 'service']
+    search_fields = ['order__desc', 'service__category']

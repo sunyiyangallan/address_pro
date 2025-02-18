@@ -59,6 +59,15 @@ class BaseSettings(BaseModel):
     img_data.short_description = u'login_backend_img'
 
 
+class OrderService(BaseModel):
+    order = models.ForeignKey('Order', on_delete=models.CASCADE)
+    service = models.ForeignKey('Service', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'OrderService'
+        verbose_name_plural = verbose_name
+
+
 class Order(BaseModel):
     uuid = models.UUIDField(verbose_name='uuid', default=get_uuid.uuid4)
     user = models.ForeignKey(to='AddressUser', verbose_name='user', null=True, blank=True, on_delete=models.CASCADE)
@@ -83,9 +92,14 @@ class Order(BaseModel):
     is_reback = models.BooleanField(verbose_name='is_reback', default=False)
     update_order = models.OneToOneField(to='UpdateOrder', on_delete=models.CASCADE, null=True, blank=True, )
     type_str = models.TextField(verbose_name='type_str', null=True, blank=True)
-
-    service_list = models.ManyToManyField(to='Service', verbose_name='service_list', null=True, blank=True)
     remark = models.TextField(verbose_name='remark', null=True, blank=True)
+    service_list = models.ManyToManyField(
+        to='Service', 
+        through='OrderService',
+        verbose_name='service_list', 
+        blank=True
+    )
+
 
 class OrderType(BaseModel):
     name = models.CharField(verbose_name='name', max_length=64, null=True, blank=True)
