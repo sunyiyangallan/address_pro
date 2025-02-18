@@ -327,9 +327,7 @@ class GetAllCommonUserView(GenericViewSet, ListModelMixin):
 # 创建订单
 class CreateOrderView(APIView):
     def post(self, request):
-        print("=== DEBUG START ===")
         service_list = request.data.get('service_list')
-        print("Original service_list:", service_list)  # Let's see the structure
         
         desc = request.data.get('desc', '')
         level = int(request.data.get('level'))
@@ -372,10 +370,6 @@ class CreateOrderView(APIView):
 
         # Verify the services were added
         final_services = OrderService.objects.filter(order=order_obj)
-        print(f"Final services count: {final_services.count()}")
-        print("Final services:", list(final_services.values('service_id')))
-        print("=== DEBUG END ===")
-
         return ApiResponse()
 
 
